@@ -1,71 +1,106 @@
-
 package gui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.String;
 
-public class Display extends JFrame implements Runnable {
+public class Display extends JFrame {
     private JTextArea textArea;
     private JTextArea incorrectWords;
     private JButton button;
     private JLabel labelBestScore;
+    private JLabel labelBestScoreNumber;
     private JLabel labelName;
     private JLabel labelTime;
     private JLabel labelYourScore;
     private JLabel labelTextArea;
     private JLabel labelIncorrectWords;
     private JTextField textField;
+    private JLabel labelTimeNumber;
+    private JLabel labelYourScoreNumber;
+    private final JLabel labelEmpty = new JLabel("");
 
     private int score;
     private int bestScore;
     private int minutes;
     private int seconds;
 
-    private String getTime () {
+    private final int sizeName = 50;
+    private String buttonString;
+
+    private String getTime() {
         return minutes + ":" + seconds;
     }
-    public Component createComponents () {
-        labelBestScore = new JLabel("Best score is " + bestScore);
 
+    public JPanel createComponents() {
+
+        // generate Best Score "row"
+        labelBestScore = new JLabel("Best score is ");
+        labelBestScoreNumber = new JLabel(Integer.toString(bestScore));
+        JPanel paneBestScore = new JPanel(new GridLayout(1, 2, 1, 1));
+        paneBestScore.add(labelBestScore);
+        paneBestScore.add(labelBestScoreNumber);
+
+        // generate Login 
         labelName = new JLabel("Name ");
-        textField = new JTextField(20);
+        textField = new JTextField(sizeName);
+        JPanel paneName = new JPanel(new GridLayout(2, 2, 1, 1));
+        paneName.add(labelName);
+        paneName.add(textField);
 
-        button = new JButton("Submit");
+        button = new JButton(buttonString);
         button.addActionListener(new ActionListener () {
             public void actionPerformed(ActionEvent e) {
                 String text = textField.getText();
                 textArea.append(text);
             }
         });
+        paneName.add(labelEmpty);
+        paneName.add(button);
 
-        labelTime = new JLabel("Timeout in " + getTime());
-        labelYourScore = new JLabel("Your score is " + score);
+        labelTime = new JLabel("Timeout in");
+        labelTimeNumber = new JLabel(getTime());
+        JPanel paneTimeScore = new JPanel(new GridLayout(2, 2, 1, 1));
+        paneTimeScore.add(labelTime);
+        paneTimeScore.add(labelTimeNumber);
 
-        labelTextArea = new JLabel("Typing area");
+        labelYourScore = new JLabel("Your score is ");
+        labelYourScoreNumber = new JLabel(Integer.toString(score));
+        paneTimeScore.add(labelYourScore);
+        paneTimeScore.add(labelYourScoreNumber);
+
         textArea = new JTextArea();
+        JPanel paneTextArea = new JPanel(new GridLayout(1, 1));
+        paneTextArea.add(textArea);
 
         labelIncorrectWords = new JLabel("Incorrect words");
         incorrectWords = new JTextArea();
+        incorrectWords.setEditable(false);
+        JPanel paneIncorrectWords = new JPanel(new GridLayout(2, 2, 1, 1));
+        paneIncorrectWords.add(labelIncorrectWords);
+        paneIncorrectWords.add(incorrectWords);
 
-        //create panel with components
-        JPanel pane = new JPanel(new GridLayout(0, 1));
-        pane.add(labelBestScore);
-        pane.add(labelName);
-        pane.add(textField);
-        pane.add(button);
-        pane.add(labelTime);
-        pane.add(labelYourScore);
-        pane.add(textArea);
-        pane.add(labelIncorrectWords);
-        pane.add(incorrectWords);
-        pane.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        return pane;
+        JPanel wrapper = new JPanel(new GridLayout(0, 1));
+        wrapper.add(paneBestScore);
+        wrapper.add(paneName);
+        wrapper.add(paneTimeScore);
+        wrapper.add(paneTextArea);
+        wrapper.add(paneIncorrectWords);
+        wrapper.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        return wrapper;
     }
 
     public void run () {
-        Component components = createComponents();
+        buttonString = "Start";
+        JPanel components = createComponents();
         JFrame frame = new JFrame("OSX >> Arch");
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int height = screenSize.height * 5 / 6;
+        int width = screenSize.width * 1 / 3;
+        frame.setPreferredSize(new Dimension(width, height));
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(components);
         frame.pack();
