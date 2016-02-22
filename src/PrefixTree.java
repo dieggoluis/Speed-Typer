@@ -8,6 +8,10 @@ class PrefixTree{
 	public PrefixTree(TreeNode root){
 		this.root = root;
 	}
+	
+	public getRoot(){
+		return root;
+	}
 
 	public void insert(String word){
 		TreeNode cur = root;
@@ -29,6 +33,8 @@ class PrefixTree{
 		return cur.getIsWord();
 	}
 
+	// Não muito útil pois procura do começo sempre
+	// Implementar função que faz a procura conforme a palavra é digitada
 	public boolean prefixSearch(String prefix){
 		TreeNode cur = root;
 		for (char c: prefix.toCharArray()){
