@@ -13,7 +13,7 @@ public class Login implements ActionListener, Runnable {
         frame = new JFrame("Login");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel content = new JPanel(new GridBagLayout());
-        content.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         frame.setContentPane(content);
         mainPanel = createComponents();
         frame.add(mainPanel);
@@ -42,7 +42,9 @@ public class Login implements ActionListener, Runnable {
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
+        gbc.ipady = 10;
         pane.add(new JTextField(20), gbc);
+        gbc.ipady = 2;
         gbc.gridy++;
         pane.add(new JTextField(20), gbc);
 
@@ -61,12 +63,15 @@ public class Login implements ActionListener, Runnable {
 
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == buttonLogin) {
-            //frame.setVisible(false);
-            //frame.dispose();
+        //    frame.setVisible(false);
+        //    Thread t = new Thread(new Display());
+        //    t.start();
+        //    frame.dispose();
+           
+            Container contentPane = frame.getContentPane();
+            contentPane.setLayout(new GridLayout(0, 1));
             
             mainPanel.removeAll();
-            mainPanel.setLayout(new GridLayout(0, 1));
-            mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
             mainPanel.add(new Display().createComponents());
             mainPanel.revalidate();
             mainPanel.repaint();
