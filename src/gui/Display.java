@@ -3,107 +3,183 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.String;
+import javax.swing.Timer;
+import java.text.SimpleDateFormat;
 
-public class Display extends JFrame {
+public class Display extends Game implements ActionListener {
+    private final long duration = 60000; //5 seconds
+    private final int timeRemaining = 5;
+    private final Font fontName = new Font(fontString, Font.BOLD, 20);
+    private final Font fontTitle = new Font(fontString, Font.BOLD, 22);
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("mm:ss");
+    private final String stringStart = "Start";
+    private final String stringQuit = "Quit";
+    private final int shiftTime = 7;
+    
     private JTextArea textArea;
     private JTextArea incorrectWords;
     private JButton button;
     private JLabel labelBestScore;
-    private JLabel labelBestScoreNumber;
     private JLabel labelName;
     private JLabel labelTime;
     private JLabel labelYourScore;
-    private JLabel labelTextArea;
     private JLabel labelIncorrectWords;
-    private JTextField textField;
-    private JLabel labelTimeNumber;
     private JLabel labelYourScoreNumber;
-    private final JLabel labelEmpty = new JLabel("");
+    private JLabel labelBestScoreNumber;
+    private JLabel labelTitle;
+    private Timer countdownTimer;
 
     private int score;
     private int bestScore;
-    private int minutes;
-    private int seconds;
+    private long currentDuration = duration;
 
-    private final int sizeName = 50;
-    private String buttonString;
+    public Display(String name) {
+        labelName = setFont(name, fontName);
+    }
 
-    private String getTime() {
-        return minutes + ":" + seconds;
+    private String stringOfSpaces(int size) {
+        String s = "";
+        for (int i=0; i<size; i++) s += " ";
+        return s;
     }
 
     public JPanel createComponents() {
+        JPanel pane = new JPanel();
+        pane.setLayout(new GridBagLayout());
+        pane.setBackground(backgroundColor);
 
-        // generate Best Score "row"
-        labelBestScore = new JLabel("Best score is ");
-        labelBestScoreNumber = new JLabel(Integer.toString(bestScore));
-        JPanel paneBestScore = new JPanel(new GridLayout(1, 2, 1, 1));
-        paneBestScore.add(labelBestScore);
-        paneBestScore.add(labelBestScoreNumber);
+        pane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 4),
+                    BorderFactory.createEmptyBorder(20, 40, 20, 40)));
 
-        // generate Login 
-        labelName = new JLabel("Name ");
-        textField = new JTextField(sizeName);
-        JPanel paneName = new JPanel(new GridLayout(2, 2, 1, 1));
-        paneName.add(labelName);
-        paneName.add(textField);
+        GridBagConstraints gbc;
+        // generate title
+        gbc = createGbc(1, 0);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets.set(5, 5, 40, 5);
+        labelTitle = setFont("SpeedTyper", fontTitle);
+        labelTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        pane.add(labelTitle, gbc);
 
-        button = new JButton(buttonString);
-        button.addActionListener(new ActionListener () {
-            public void actionPerformed(ActionEvent e) {
-                String text = textField.getText();
-                textArea.append(text);
-            }
-        });
-        paneName.add(labelEmpty);
-        paneName.add(button);
+        // generate name
+        gbc = createGbc(0, 1);
+        gbc.insets.set(5, 5, 20, 5);
+        pane.add(labelName, gbc);
 
-        labelTime = new JLabel("Timeout in");
-        labelTimeNumber = new JLabel(getTime());
-        JPanel paneTimeScore = new JPanel(new GridLayout(2, 2, 1, 1));
-        paneTimeScore.add(labelTime);
-        paneTimeScore.add(labelTimeNumber);
+        // generate timer
+        gbc = createGbc(2, 1);
+        countdownTimer = new Timer(1000, this);
+        countdownTimer.setInitialDelay(0);
+        labelTime = setFont(stringOfSpaces(shiftTime) + timeFormat.format(duration), fontName);
+        pane.add(labelTime, gbc);
 
-        labelYourScore = new JLabel("Your score is ");
-        labelYourScoreNumber = new JLabel(Integer.toString(score));
-        paneTimeScore.add(labelYourScore);
-        paneTimeScore.add(labelYourScoreNumber);
+        // generate Score labels
+        gbc = createGbc(1, 2);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
+        labelYourScore = setFont("Score", font);
+        labelYourScore.setHorizontalAlignment(SwingConstants.CENTER);
+        pane.add(labelYourScore, gbc);
 
-        textArea = new JTextArea();
-        JPanel paneTextArea = new JPanel(new GridLayout(1, 1));
-        paneTextArea.add(textArea);
+        //gbcScore.gridy++;
+        gbc = createGbc(1, 3);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
+        labelYourScoreNumber = setFont(Integer.toString(score), font);
+        labelYourScoreNumber.setHorizontalAlignment(SwingConstants.CENTER);
+        pane.add(labelYourScoreNumber, gbc);
 
-        labelIncorrectWords = new JLabel("Incorrect words");
-        incorrectWords = new JTextArea();
+        gbc = createGbc(1, 4);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
+        labelBestScore = setFont("Best Score", font);
+        labelBestScore.setHorizontalAlignment(SwingConstants.CENTER);
+        pane.add(labelBestScore, gbc);
+
+        gbc = createGbc(1, 5);
+        gbc.insets.set(5, 5, 20, 5);
+        labelBestScoreNumber = setFont(Integer.toString(bestScore), font);
+        labelBestScoreNumber.setHorizontalAlignment(SwingConstants.CENTER);
+        pane.add(labelBestScoreNumber, gbc);
+
+        // text Area
+        gbc = createGbc(0, 6);
+        gbc.insets.set(5, 5, 20, 5);
+        gbc.gridwidth = 3;
+        textArea = new JTextArea(10, 10);
+        textArea.setLineWrap(true);        
+        pane.add(textArea, gbc);
+        
+        // incorrec words
+        gbc = createGbc(0, 7);
+        labelIncorrectWords = setFont("Incorrect words", font);
+        labelIncorrectWords.setHorizontalAlignment(SwingConstants.LEFT);
+        pane.add(labelIncorrectWords, gbc);
+
+        gbc = createGbc(0, 8);
+        gbc.insets.set(5, 5, 10, 5);
+        gbc.gridwidth = 3;
+        incorrectWords = new JTextArea(5, 10);
         incorrectWords.setEditable(false);
-        JPanel paneIncorrectWords = new JPanel(new GridLayout(2, 2, 1, 1));
-        paneIncorrectWords.add(labelIncorrectWords);
-        paneIncorrectWords.add(incorrectWords);
+        pane.add(incorrectWords, gbc);
 
-        JPanel wrapper = new JPanel(new GridLayout(0, 1));
-        wrapper.add(paneBestScore);
-        wrapper.add(paneName);
-        wrapper.add(paneTimeScore);
-        wrapper.add(paneTextArea);
-        wrapper.add(paneIncorrectWords);
-        wrapper.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        //Button start
+        gbc = createGbc(1, 9);
+        gbc.insets.set(10, 5, 5, 5);
+        gbc.ipady = 10;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
+        button = new JButton(stringStart);
+        button.setFont(font);
+        button.setHorizontalAlignment(SwingConstants.CENTER);
+        button.addActionListener(this);
+        pane.add(button, gbc);
 
-        return wrapper;
+        return pane;
     }
 
-    public void run () {
-        buttonString = "Start";
-        JPanel components = createComponents();
-        JFrame frame = new JFrame("OSX >> Arch");
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = screenSize.height * 5 / 6;
-        int width = screenSize.width * 1 / 3;
-        frame.setPreferredSize(new Dimension(width, height));
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(components);
-        frame.pack();
-        frame.setVisible(true);
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == countdownTimer) {
+            currentDuration -= 1000;
+            labelTime.setText(stringOfSpaces(shiftTime) + timeFormat.format(currentDuration));
+            if(currentDuration <= 0){
+                countdownTimer.stop();
+                currentDuration = duration;
+                button.setText(stringStart);
+            }
+        }
+        if (e.getSource() == button) {
+            if (button.getText() == stringStart) {
+                if (!countdownTimer.isRunning()) {
+                    button.setText(stringQuit);
+                    countdownTimer.start();
+                }
+            } else {
+                if (countdownTimer.isRunning()) {
+                    button.setText(stringStart);
+                    countdownTimer.stop();
+                    currentDuration = duration;
+                    labelTime.setText(stringOfSpaces(shiftTime) + timeFormat.format(currentDuration));
+                }
+            }
+        }
     }
+
+//    public void run () {
+//        buttonString = "Start";
+//        JPanel components = createComponents();
+//        JFrame frame = new JFrame("OSX >> Arch");
+//
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        int height = screenSize.height * 5 / 6;
+//        int width = screenSize.width * 1 / 3;
+//        frame.setPreferredSize(new Dimension(width, height));
+//
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.getContentPane().add(components);
+//        frame.pack();
+//        frame.setVisible(true);
+//    }
 }
