@@ -6,7 +6,7 @@ import java.lang.String;
 import javax.swing.Timer;
 import java.text.SimpleDateFormat;
 
-public class Display extends Game implements ActionListener {
+public class Display extends Screen implements ActionListener {
     private final long duration = 60000; //5 seconds
     private final int timeRemaining = 5;
     private final Font fontName = new Font(fontString, Font.BOLD, 20);
@@ -33,7 +33,12 @@ public class Display extends Game implements ActionListener {
     private int bestScore;
     private long currentDuration = duration;
 
-    public Display(String name) {
+    public Display() {
+        //pointer used in the "mother" class Screen
+        display = this;
+    }
+
+    public void setUserName(String name) {
         labelName = setFont(name, fontName);
     }
 
@@ -139,7 +144,6 @@ public class Display extends Game implements ActionListener {
         return pane;
     }
 
-
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == countdownTimer) {
             currentDuration -= 1000;
@@ -166,20 +170,4 @@ public class Display extends Game implements ActionListener {
             }
         }
     }
-
-//    public void run () {
-//        buttonString = "Start";
-//        JPanel components = createComponents();
-//        JFrame frame = new JFrame("OSX >> Arch");
-//
-//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        int height = screenSize.height * 5 / 6;
-//        int width = screenSize.width * 1 / 3;
-//        frame.setPreferredSize(new Dimension(width, height));
-//
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.getContentPane().add(components);
-//        frame.pack();
-//        frame.setVisible(true);
-//    }
 }

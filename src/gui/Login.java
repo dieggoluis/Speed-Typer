@@ -6,32 +6,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.lang.String;
 
-public class Login extends Game implements ActionListener, Runnable {
-    private JButton buttonLogin;
-    private JTextField txtUsername;
-    private JTextField txtPassword;
+public class Login extends Screen {
+    public JButton buttonLogin;
+    public JTextField txtUsername;
+    public JTextField txtPassword;
 
-    public void run () {
-
-        //wrapper panel
-        wrapper = new JPanel(new GridBagLayout());
-        wrapper.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        wrapper.setBackground(backgroundColor);
-        
-        //main frame
-        frame = new JFrame("SpeedTyper");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setContentPane(wrapper);
-        
-        JPanel content = createComponents();
-        frame.add(content);
-        frame.pack();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = screenSize.height * 6 / 6;
-        int width = screenSize.width * 3 / 3;
-        frame.setSize(new Dimension(width, height));
-        frame.setLocationRelativeTo(null); //center of screen
-        frame.setVisible(true);
+    public Login() {
+        //pointer used in the "mother" class Screen
+        login = this;
     }
     
     public JPanel createComponents() {
@@ -86,19 +68,6 @@ public class Login extends Game implements ActionListener, Runnable {
         pane.add(buttonLogin, gbc);
 
         return pane;
-    }
-
-    //button listener
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == buttonLogin) {
-            // Autenticar aqui
-            // if autenticar
-            String username = txtUsername.getText();
-            wrapper.removeAll();
-            wrapper.add(new Display(username).createComponents());
-            wrapper.revalidate();
-            wrapper.repaint();
-        }
     }
 }
 
