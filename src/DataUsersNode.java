@@ -3,6 +3,12 @@ public class DataUsersNode{
 	private byte[] salt;
 	private int highScore;
 
+	public DataUsersNode(){
+		this.hash = null;
+		this.salt = null;
+		this.highScore = 0;
+	}
+	
 	// Constructor for a new user
 	public DataUsersNode(byte[] hash, byte[] salt){
 		this.hash = hash;
