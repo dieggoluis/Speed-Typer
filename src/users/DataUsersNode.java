@@ -17,6 +17,12 @@ public class DataUsersNode{
 		this.salt = salt;
 		this.highScore = 0;
 	}
+	
+	public DataUsersNode(byte[] hash, byte[] salt, int highScore){
+		this.hash = hash;
+		this.salt = salt;
+		this.highScore = highScore;
+	}
 
 	public void setHash(byte[] hash){
 		this.hash = hash;

@@ -11,22 +11,21 @@ import java.util.*;
 public class DataUsers{
 	private Random random;
 	private Hashtable<String, DataUsersNode> usersTable;
-	final String databaseAddress = "database.in";
+	final String databaseAddress = "users/database.in";
 
 	public DataUsers(){
 		random = new Random();
 		usersTable = new Hashtable<String, DataUsersNode>();
 	}
 
-	public void readDatabase(){
+	public void readDatabase() throws FileNotFoundException, IOException{
 		BufferedReader database = new BufferedReader(new FileReader(databaseAddress));	
 		String currentLine;
 		String[] aux;
 		byte[] salt;
 		byte[] hash;
 		int highScore;
-		// end when can't read more lines or the line read is just a new line character
-		while ((currentLine = database.readLine()) != null && !currentLine.equals("\n")) {
+		while ((currentLine = database.readLine()) != null) {
 			aux = currentLine.split(" ");
 			Base64.Decoder dec = Base64.getDecoder();
 			hash = dec.decode(aux[1]);
@@ -37,14 +36,14 @@ public class DataUsers{
 		database.close();
 	}
 
-	public void printDatabase(){	
+	public void printDatabase() throws IOException{	
 		BufferedWriter database = new BufferedWriter(new FileWriter(databaseAddress));
 		Base64.Encoder enc = Base64.getEncoder();
-		for (String key: usersTable.keyset()){
+		for (String key: usersTable.keySet()){
 			DataUsersNode aux = usersTable.get(key);
-			database.write(key);
-			database.write(enc.encodeToString(aux.getHash()));
-			database.write(enc.encodeToString(aux.getSalt()));
+			database.write(key+" ");
+			database.write(enc.encodeToString(aux.getHash())+" ");
+			database.write(enc.encodeToString(aux.getSalt())+" ");
 			database.write(Integer.toString(aux.getHighScore()));
 			database.newLine();
 		}
@@ -59,7 +58,7 @@ public class DataUsers{
 			PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
 			SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 			byte[] newHash = f.generateSecret(spec).getEncoded();
-			if (Arrays.equal(hash, newHash))
+			if (Arrays.equals(hash, newHash))
 				return true;
 			return false;
 		}
