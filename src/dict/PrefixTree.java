@@ -23,9 +23,11 @@ class PrefixTree{
 					cur.setChild(26, new TreeNode());
 				cur = cur.getChild(26);	
 			}	
-			if (cur.getChild(c-'a') == null)
-				cur.setChild(c-'a', new TreeNode());
-			cur = cur.getChild(c-'a');	
+			else{
+				if(cur.getChild(c-'a') == null)
+					cur.setChild(c-'a', new TreeNode());
+				cur = cur.getChild(c-'a');
+			}	
 		}
 		cur.setIsWord(true);	
 	}
@@ -37,10 +39,12 @@ class PrefixTree{
 				if (cur.getChild(26) == null)
 					return false;
 				cur = cur.getChild(26);	
-			}	
-			if (cur.getChild(c-'a') == null)
-				return false;
-			cur = cur.getChild(c-'a');
+			}
+			else{	
+				if (cur.getChild(c-'a') == null)
+					return false;
+				cur = cur.getChild(c-'a');
+			}
 		}
 		return cur.getIsWord();
 	}
@@ -55,9 +59,11 @@ class PrefixTree{
 					return false;
 				cur = cur.getChild(26);	
 			}	
-			if (cur.getChild(c-'a') == null)
-				return false;
-			cur = cur.getChild(c-'a');
+			else{
+				if (cur.getChild(c-'a') == null)
+					return false;
+				cur = cur.getChild(c-'a');
+			}
 		}
 		return true;
 	}
