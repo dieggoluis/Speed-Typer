@@ -32,6 +32,10 @@ class PrefixTree{
 		cur.setIsWord(true);	
 	}
 
+
+	// The next two functions won't be used since the search is done always from the beginning of the tree
+	// Can't deal with non-ASCII chars, so, a lot of exceptions
+	// They stay in this code anyway only for being used as example for the next code versions
 	public boolean search(String word){
 		TreeNode cur = root;
 		for (char c: word.toCharArray()){
@@ -49,8 +53,6 @@ class PrefixTree{
 		return cur.getIsWord();
 	}
 
-	// Não muito útil pois procura do começo sempre
-	// Implementar função que faz a procura conforme a palavra é digitada
 	public boolean prefixSearch(String prefix){
 		TreeNode cur = root;
 		for (char c: prefix.toCharArray()){
