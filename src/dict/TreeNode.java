@@ -11,12 +11,6 @@ class TreeNode{
 		this.children = new TreeNode[27];
 	}
 	
-	public TreeNode(boolean isWord){
-		this.isWord = isWord;
-		this.frequency = 0;
-		this.children = new TreeNode[27];
-	}
-	
 	public boolean getIsWord(){
 		return isWord;
 	}
@@ -29,20 +23,8 @@ class TreeNode{
 		return frequency;
 	}
 
-	public void setFrequency(int frequency){
-		this.frequency = frequency;
-	}
-
 	public void increaseFrequency(){
 		frequency++;
-	}
-
-	public TreeNode[] getChildren(){
-		return children;
-	}
-
-	public void setChildren(TreeNode[] children){
-		this.children = children;	
 	}
 
 	public TreeNode getChild(int i){
