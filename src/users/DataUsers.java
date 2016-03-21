@@ -62,16 +62,18 @@ public class DataUsers{
 				return true;
 			return false;
 		}
-		newUser(user, password);
-		return true;		
+		return newUser(user, password);
 	}	
 
-	public void newUser(String user, String password) throws NoSuchAlgorithmException, InvalidKeySpecException{
+	public boolean newUser(String user, String password) throws NoSuchAlgorithmException, InvalidKeySpecException{
+		if (password.equals(""))
+			return false;
 		byte[] salt = new byte[16];
 		random.nextBytes(salt);
 		PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
 		SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 		byte[] hash = f.generateSecret(spec).getEncoded();
 		usersTable.put(user, new DataUsersNode(hash, salt, 0));
+		return true;
 	}
 }

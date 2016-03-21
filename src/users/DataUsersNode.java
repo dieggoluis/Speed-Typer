@@ -24,16 +24,8 @@ public class DataUsersNode{
 		this.highScore = highScore;
 	}
 
-	public void setHash(byte[] hash){
-		this.hash = hash;
-	}
-
 	public byte[] getHash(){
 		return hash;
-	}
-
-	public void setSalt(byte[] salt){
-		this.salt = salt;
 	}
 
 	public byte[] getSalt(){
