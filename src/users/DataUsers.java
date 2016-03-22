@@ -11,7 +11,8 @@ import java.util.*;
 public class DataUsers{
 	private Random random;
 	private Hashtable<String, DataUsersNode> usersTable;
-	final String databaseAddress = "users/database.in";
+	private final String databaseAddress = "users/database.in";
+	private final int lenMaxUser = 20;
 
 	public DataUsers(){
 		random = new Random();
@@ -66,7 +67,7 @@ public class DataUsers{
 	}	
 
 	public boolean newUser(String user, String password) throws NoSuchAlgorithmException, InvalidKeySpecException{
-		if (password.equals(""))
+		if (user.length() > lenMaxUser || password.equals(""))
 			return false;
 		byte[] salt = new byte[16];
 		random.nextBytes(salt);
