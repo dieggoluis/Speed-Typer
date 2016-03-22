@@ -16,7 +16,7 @@ class Explorer{
 		return possibleWord;
 	}
 
-	public String getString(){
+	public String getWord(){
 		return word;
 	}
 
@@ -24,7 +24,7 @@ class Explorer{
 		return wrongLetters;
 	}
 
-	public Explorer(){
+	public Explorer() throws FileNotFoundException, IOException{
 		tree = new PrefixTree();
 		loadDictionary();
 		explorerNode = tree.getRoot();
@@ -46,22 +46,31 @@ class Explorer{
 		explorerNode = tree.getRoot();
 		stackOfNodes.clear();
 		word = "";
-		isWord = true;
+		possibleWord = true;
 		wrongLetters = 0;
 	}
+
+	public int computePoints(){
+		if (possibleWord && explorerNode.getIsWord())
+			return Integer.max(0, 2*word.length()-3*explorerNode.getFrequency());
+		return -word.length();
+	}
 	
-	// Returns Integer.MAX_VALUE when the word has not finished yet
+	// Returns Integer.MAX_VALUE if the word has not finished yet
 	public int explore(char c){
-		// Deal with enter key later (I hope that the user don't use it)
-		if (c == ' '){	
-			// int out = computePoints();
+		if (c == ' ' || c == '\n'){	
+			int out = computePoints();
 			explorerNode.increaseFrequency();
 			returnToRoot();
-			// return out;
+			return out;
 		}
 		else if (c == '\b'){
-			if (wrongLetters == 0)
-				explorerNode = stackOfNodes.pop();
+			if (wrongLetters == 0){
+				if (stackOfNodes.size() > 0){
+					explorerNode = stackOfNodes.pop();
+					word = word.substring(0, word.length()-1);
+				}
+			}
 			else if (wrongLetters == 1){
 				wrongLetters--;
 				possibleWord = true;
@@ -70,25 +79,35 @@ class Explorer{
 				wrongLetters--;
 		}
 		else{
+			word += c;
 			if (possibleWord){
-				stackOfNodes.push(explorerNode);
 				if (c == '\''){
-					word += c;
-					if (explorerNode.getChild(26) == null)
+					if (explorerNode.getChild(26) == null){
+						wrongLetters++;
 						possibleWord = false;
-					explorerNode = explorerNode.getChild(26);	
+					}
+					else{
+						stackOfNodes.push(explorerNode);
+						explorerNode = explorerNode.getChild(26);	
+					}
 				}
 				else if (c >= 'a' && c <= 'z'){
-					word += c;
-					if (explorerNode.getChild(c-'a') == null)
+					if (explorerNode.getChild(c-'a') == null){
+						wrongLetters++;
 						possibleWord = false;
-					explorerNode = explorerNode.getChild(c-'a');
+					}
+					else{
+						stackOfNodes.push(explorerNode);
+						explorerNode = explorerNode.getChild(c-'a');
+					}
 				}
 				else{
 					wrongLetters++;
 					possibleWord = false;
 				}
 			}
+			else
+				wrongLetters++;
 		}
 		return Integer.MAX_VALUE;
 	}
