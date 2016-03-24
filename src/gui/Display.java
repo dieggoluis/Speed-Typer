@@ -5,12 +5,16 @@ import java.awt.event.*;
 import java.lang.String;
 import javax.swing.Timer;
 import java.text.SimpleDateFormat;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 
 public class Display extends Screen implements ActionListener {
     private final long duration = 60000; //5 seconds
     private final int timeRemaining = 5;
     private final Font fontName = new Font(fontString, Font.BOLD, 20);
     private final Font fontTitle = new Font(fontString, Font.BOLD, 22);
+    private final Font fontTextArea = new Font(fontString, Font.PLAIN, 12);
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("mm:ss");
     private final String stringStart = "Start";
     private final String stringQuit = "Quit";
@@ -113,6 +117,15 @@ public class Display extends Screen implements ActionListener {
         gbc.gridwidth = 3;
         textArea = new JTextArea(10, 10);
         textArea.setLineWrap(true);        
+        textArea.addKeyListener(new KeyMonitor());
+        textArea.setEditable(false);
+        textArea.setFont(fontTextArea);
+        textArea.setCaretColor(Color.white);
+        textArea.setForeground(Color.white);
+        textArea.setBackground(backgroundColor);
+        textArea.setMargin(new Insets(5,5,5,5));
+        textArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
+                    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         pane.add(textArea, gbc);
         
         // incorrec words
@@ -126,6 +139,10 @@ public class Display extends Screen implements ActionListener {
         gbc.gridwidth = 3;
         incorrectWords = new JTextArea(5, 10);
         incorrectWords.setEditable(false);
+        incorrectWords.setForeground(Color.white);
+        incorrectWords.setBackground(backgroundColor);
+        incorrectWords.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
+                    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         pane.add(incorrectWords, gbc);
 
         //Button start
@@ -137,6 +154,10 @@ public class Display extends Screen implements ActionListener {
         gbc.anchor = GridBagConstraints.CENTER;
         button = new JButton(stringStart);
         button.setFont(font);
+        button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
+                    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        button.setForeground(fontColor);
+        button.setBackground(backgroundColor);
         button.setHorizontalAlignment(SwingConstants.CENTER);
         button.addActionListener(this);
         pane.add(button, gbc);
@@ -159,11 +180,13 @@ public class Display extends Screen implements ActionListener {
                 if (!countdownTimer.isRunning()) {
                     button.setText(stringQuit);
                     countdownTimer.start();
+                    textArea.setEditable(true);
                 }
             } else {
                 if (countdownTimer.isRunning()) {
                     button.setText(stringStart);
                     countdownTimer.stop();
+                    textArea.setEditable(false);
                     currentDuration = duration;
                     labelTime.setText(stringOfSpaces(shiftTime) + timeFormat.format(currentDuration));
                 }
