@@ -1,4 +1,5 @@
 package gui;
+import dict.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -7,10 +8,15 @@ import javax.swing.Timer;
 import java.text.SimpleDateFormat;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
+import javax.swing.text.BadLocationException;
+import java.io.*;
 
 
-public class Display extends Screen implements ActionListener {
-    private final long duration = 60000; //5 seconds
+public class Display extends Screen implements ActionListener, KeyListener {
+    private final long duration = 90000; //1:30 min
     private final int timeRemaining = 5;
     private final Font fontName = new Font(fontString, Font.BOLD, 20);
     private final Font fontTitle = new Font(fontString, Font.BOLD, 22);
@@ -34,16 +40,22 @@ public class Display extends Screen implements ActionListener {
     private Timer countdownTimer;
 
     private int score;
-    private int bestScore;
     private long currentDuration = duration;
+    private Explorer exp;
+    private final int DELETE = 127;
+    private String incorrectWordsString;
 
     public Display() {
         //pointer used in the "mother" class Screen
+        incorrectWordsString = "";
         display = this;
-    }
-
-    public void setUserName(String name) {
-        labelName = setFont(name, fontName);
+        try {
+            exp = new Explorer();
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found");
+        } catch (IOException ex) {
+            System.out.println("IO problem");
+        }
     }
 
     private String stringOfSpaces(int size) {
@@ -73,6 +85,7 @@ public class Display extends Screen implements ActionListener {
         // generate name
         gbc = createGbc(0, 1);
         gbc.insets.set(5, 5, 20, 5);
+        labelName = setFont(username, fontName);
         pane.add(labelName, gbc);
 
         // generate timer
@@ -117,7 +130,7 @@ public class Display extends Screen implements ActionListener {
         gbc.gridwidth = 3;
         textArea = new JTextArea(10, 10);
         textArea.setLineWrap(true);        
-        textArea.addKeyListener(new KeyMonitor());
+        textArea.addKeyListener(this);
         textArea.setEditable(false);
         textArea.setFont(fontTextArea);
         textArea.setCaretColor(Color.white);
@@ -138,8 +151,10 @@ public class Display extends Screen implements ActionListener {
         gbc = createGbc(0, 8);
         gbc.insets.set(5, 5, 10, 5);
         gbc.gridwidth = 3;
-        incorrectWords = new JTextArea(5, 10);
+        incorrectWords = new JTextArea(3, 10);
         incorrectWords.setEditable(false);
+        incorrectWords.setLineWrap(true);        
+        incorrectWords.setFont(fontTextArea);
         incorrectWords.setForeground(Color.white);
         incorrectWords.setBackground(backgroundColor);
         incorrectWords.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
@@ -172,25 +187,96 @@ public class Display extends Screen implements ActionListener {
             labelTime.setText(stringOfSpaces(shiftTime) + timeFormat.format(currentDuration));
             if(currentDuration <= 0){
                 countdownTimer.stop();
+                if (score > bestScore) {
+                    bestScore = score;
+                    dataUsers.setHighScore(username, bestScore);
+                    try {
+                        dataUsers.printDatabase();
+                    } catch (IOException ex) {
+                        System.out.println("IO problem");
+                    }
+                    labelBestScoreNumber.setText(Integer.toString(bestScore));
+                }
+                textArea.setText("");
+                labelYourScoreNumber.setText("0");
                 currentDuration = duration;
                 button.setText(stringStart);
             }
         }
+
         if (e.getSource() == button) {
             if (button.getText() == stringStart) {
                 if (!countdownTimer.isRunning()) {
+                    score = 0;
                     button.setText(stringQuit);
                     countdownTimer.start();
                     textArea.setEditable(true);
                 }
             } else {
-                if (countdownTimer.isRunning()) {
-                    button.setText(stringStart);
-                    countdownTimer.stop();
-                    textArea.setEditable(false);
-                    currentDuration = duration;
-                    labelTime.setText(stringOfSpaces(shiftTime) + timeFormat.format(currentDuration));
+                if (score > bestScore) {
+                    bestScore = score;
+                    dataUsers.setHighScore(username, bestScore);
+                    try {
+                        dataUsers.printDatabase();
+                    } catch (IOException ex) {
+                        System.out.println("IO problem");
+                    }
+                    labelBestScoreNumber.setText(Integer.toString(bestScore));
                 }
+                textArea.setText("");
+                incorrectWords.setText("");
+                labelYourScoreNumber.setText("0");
+                button.setText(stringStart);
+                countdownTimer.stop();
+                textArea.setEditable(false);
+                currentDuration = duration;
+                labelTime.setText(stringOfSpaces(shiftTime) + timeFormat.format(currentDuration));
+            }
+        }
+    }
+
+    // Handle the key typed event from the text field
+    public void keyTyped(KeyEvent e) {
+        int id = e.getID();
+        if (id == KeyEvent.KEY_TYPED) {
+            char c = e.getKeyChar();
+            int currentScore = exp.explore(c);
+            if (currentScore != Integer.MAX_VALUE) {
+                score += currentScore;
+                labelYourScoreNumber.setText(Integer.toString(score));
+                //textArea.setHighlighter(null);
+            }
+        } 
+    }
+     
+    public void keyPressed(KeyEvent e) {
+        char c = e.getKeyChar();
+        if ((c == ' ' || c == '\n') && !exp.isPossibleWord()) {
+            incorrectWordsString += exp.getWord() + " ";
+            incorrectWords.setText(incorrectWordsString);
+        }
+    }
+
+    public void keyReleased(KeyEvent e) { 
+        //print(textArea.getText());
+        if (!exp.isPossibleWord()) {
+            Highlighter highlighter = textArea.getHighlighter();
+            HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
+            int beginOfCurrentWord = textArea.getText().indexOf(exp.getWord());
+            int endCurrentWord = beginOfCurrentWord + exp.getWord().length();
+
+            //debug
+            print(exp.getWord());
+            print(textArea.getText());
+            print((int)e.getKeyChar());
+            print(beginOfCurrentWord);
+            print(endCurrentWord);
+
+            if (e.getKeyChar() == ' ') endCurrentWord--;
+            try {
+                highlighter.addHighlight(beginOfCurrentWord, endCurrentWord, painter);
+            } catch (BadLocationException ex) {
+                System.out.println("bad location");
             }
         }
     }

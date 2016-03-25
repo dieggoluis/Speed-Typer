@@ -36,11 +36,12 @@ public class KeyMonitor implements KeyListener {
         if (id == KeyEvent.KEY_TYPED) {
             char c = e.getKeyChar();
             currentScore = exp.explore(c);
-            getCurrentScore();
+            //getCurrentScore();
         } 
     }
 
     public int getCurrentScore() {
+        //debug
         System.out.println(currentScore);
         return currentScore;
     }

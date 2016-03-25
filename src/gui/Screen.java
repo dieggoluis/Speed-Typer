@@ -1,14 +1,20 @@
 package gui;
+import users.*;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.String;
+import java.util.*;
+import java.io.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 public abstract class Screen implements ActionListener, Runnable, Component {
     public static String username;
     public static String password;
+    protected static int bestScore;
     public static JPanel wrapper;
     public static JFrame frame;
     public static Login login;
@@ -19,17 +25,51 @@ public abstract class Screen implements ActionListener, Runnable, Component {
     public static final Color backgroundColor = new Color(32, 32, 32);
     public static final Font font = new Font(fontString, Font.BOLD, 16);
 
+    protected static DataUsers dataUsers;
+
+    public Screen() {
+        bestScore = 0;
+        try {
+            dataUsers = new DataUsers();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println("IO problem");
+        }
+    }
+
+    protected void print(Object arg) {
+        System.out.println(arg);
+    }
+
     //button listener
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == login.buttonLogin) {
-            // Autenticar aqui
-            // if autenticar
-            String username = login.txtUsername.getText();
-            display.setUserName(username); 
-            wrapper.removeAll();
-            wrapper.add(display.createComponents());
-            wrapper.revalidate();
-            wrapper.repaint();
+            username = login.txtUsername.getText();
+            password = login.txtPassword.getText();
+            try {
+                if (dataUsers.verifyCredentials(username, password)) {
+                    bestScore = dataUsers.getHighScore(username);
+                    System.out.println(bestScore);
+                    try {
+                        dataUsers.printDatabase();
+                    } catch (IOException ex) {
+                        System.out.println("IO problem");
+                    }
+
+                    wrapper.removeAll();
+                    wrapper.add(display.createComponents());
+                    wrapper.revalidate();
+                    wrapper.repaint();
+                } else {
+                    login.txtUsername.setText("");
+                    login.txtPassword.setText("");
+                }
+            } catch (NoSuchAlgorithmException ex) {
+                System.out.println("no such algorithm");
+            } catch (InvalidKeySpecException ex) {
+                System.out.println("invalid key spec");
+            }
         }
     }
 

@@ -14,12 +14,22 @@ public class DataUsers{
 	private final String databaseAddress = "users/database.in";
 	private final int lenMaxUser = 20;
 
-	public DataUsers(){
+	public DataUsers() throws FileNotFoundException, IOException {
 		random = new Random();
 		usersTable = new Hashtable<String, DataUsersNode>();
+        readDatabase();
 	}
 
-	public void readDatabase() throws FileNotFoundException, IOException{
+    public int getHighScore(String user) {
+        return usersTable.get(user).getHighScore();
+    }
+
+    public void setHighScore(String user, int score) {
+        if (score > getHighScore(user)) 
+            usersTable.get(user).setHighScore(score);
+    }
+
+	private void readDatabase() throws FileNotFoundException, IOException{
 		BufferedReader database = new BufferedReader(new FileReader(databaseAddress));	
 		String currentLine;
 		String[] aux;

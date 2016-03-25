@@ -12,7 +12,7 @@ public class Explorer{
 	private int wrongLetters;
 	private final String inputFile = "dict/words";
 
-	public boolean getPossibleWord(){
+	public boolean isPossibleWord(){
 		return possibleWord;
 	}
 
@@ -72,7 +72,7 @@ public class Explorer{
 			return out;
 		}
 		else if (c == '\b'){
-			if (wrongLetters == 0){
+			if (wrongLetters > 1){
 				if (stackOfNodes.size() > 0){
 					explorerNode = stackOfNodes.pop();
 					word = word.substring(0, word.length()-1);
@@ -82,17 +82,13 @@ public class Explorer{
 				wrongLetters--;
 				possibleWord = true;
 			}
-	    		    else
+            else
 				wrongLetters--;
 		}
 		else{
 			word = word + Character.toString(c);
-            //debug
-            System.out.println(word);
-            //debug
 			if (possibleWord){
-                System.out.println("entrou");
-				if (c == '\''){
+                if (c == '\''){
 					if (explorerNode.getChild(26) == null){
 						wrongLetters++;
 						possibleWord = false;

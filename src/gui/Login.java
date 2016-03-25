@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.String;
+import javax.crypto.*;
 
 public class Login extends Screen {
     public JButton buttonLogin;
@@ -65,6 +66,7 @@ public class Login extends Screen {
         gbc.ipady = 10;
         txtPassword = new JPasswordField(20);
         txtPassword.setHorizontalAlignment(JTextField.CENTER);
+        txtPassword.setCaretColor(Color.white);
         txtPassword.setForeground(Color.white);
         txtPassword.setBackground(backgroundColor);
         txtPassword.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
