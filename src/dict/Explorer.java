@@ -72,12 +72,12 @@ public class Explorer{
 			return out;
 		}
 		else if (c == '\b'){
-			if (wrongLetters > 1){
-				if (stackOfNodes.size() > 0){
+			if (word.length() > 0)
+                word = word.substring(0, word.length()-1);
+			if (wrongLetters == 0){
+                if (stackOfNodes.size() > 0)
 					explorerNode = stackOfNodes.pop();
-					word = word.substring(0, word.length()-1);
-				}
-			}
+            }
 			else if (wrongLetters == 1){
 				wrongLetters--;
 				possibleWord = true;
