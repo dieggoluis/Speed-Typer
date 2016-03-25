@@ -1,6 +1,6 @@
 package dict;
 
-class TreeNode{
+public class TreeNode{
 	private boolean isWord;
 	private TreeNode[] children;
 	private int frequency;

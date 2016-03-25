@@ -1,6 +1,6 @@
 package dict;
 
-class PrefixTree{	
+public class PrefixTree{	
 	private TreeNode root;
 	
 	public PrefixTree(){
