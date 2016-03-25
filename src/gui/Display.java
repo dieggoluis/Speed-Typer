@@ -126,6 +126,7 @@ public class Display extends Screen implements ActionListener {
         textArea.setMargin(new Insets(5,5,5,5));
         textArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
                     BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        textArea.setTransferHandler(null);
         pane.add(textArea, gbc);
         
         // incorrec words

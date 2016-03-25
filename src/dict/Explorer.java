@@ -65,7 +65,9 @@ public class Explorer{
 	public int explore(char c){
 		if (c == ' ' || c == '\n'){	
 			int out = computePoints();
-			explorerNode.increaseFrequency();
+            if (possibleWord) {
+                explorerNode.increaseFrequency();
+            }
 			returnToRoot();
 			return out;
 		}
@@ -84,8 +86,12 @@ public class Explorer{
 				wrongLetters--;
 		}
 		else{
-			word += c;
+			word = word + Character.toString(c);
+            //debug
+            System.out.println(word);
+            //debug
 			if (possibleWord){
+                System.out.println("entrou");
 				if (c == '\''){
 					if (explorerNode.getChild(26) == null){
 						wrongLetters++;

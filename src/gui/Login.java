@@ -69,6 +69,7 @@ public class Login extends Screen {
         txtPassword.setBackground(backgroundColor);
         txtPassword.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
                     BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        txtPassword.setTransferHandler(null);
         pane.add(txtPassword, gbc);
 
         //Button Login

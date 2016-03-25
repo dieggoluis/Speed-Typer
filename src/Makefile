@@ -4,4 +4,5 @@ ALL:
 
 clean:
 	rm -f *.class
-	rm -f GUI/*.class
+	rm -f gui/*.class
+	rm -f dict/*.class
