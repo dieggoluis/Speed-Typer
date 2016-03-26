@@ -200,6 +200,7 @@ public class Display extends Screen implements ActionListener, KeyListener {
                     labelBestScoreNumber.setText(Integer.toString(bestScore));
                 }
                 textArea.setText("");
+                textArea.setEditable(false);
                 incorrectWords.setText("");
                 labelYourScoreNumber.setText("0");
                 currentDuration = duration;
@@ -215,7 +216,7 @@ public class Display extends Screen implements ActionListener, KeyListener {
                     countdownTimer.start();
                     textArea.setEditable(true);
                     textArea.requestFocusInWindow();
-
+                    incorrectWordsString = "";
                 }
                     
             } else {
@@ -229,6 +230,7 @@ public class Display extends Screen implements ActionListener, KeyListener {
                     }
                     labelBestScoreNumber.setText(Integer.toString(bestScore));
                 }
+                exp.explore(' '); //reset explore
                 textArea.setText("");
                 incorrectWords.setText("");
                 labelYourScoreNumber.setText("0");
@@ -243,51 +245,58 @@ public class Display extends Screen implements ActionListener, KeyListener {
 
     // Handle the key typed event from the text field
     public void keyTyped(KeyEvent e) {
-        int id = e.getID();
-        if (id == KeyEvent.KEY_TYPED) {
-            char c = e.getKeyChar();
-            int currentScore = exp.explore(c);
-            if (currentScore != Integer.MAX_VALUE) {
-                score += currentScore;
-                labelYourScoreNumber.setText(Integer.toString(score));
-                textArea.getHighlighter().removeAllHighlights();
-                wasWrongWord = false;
-            }
-        } 
+        if (countdownTimer.isRunning()) {
+            int id = e.getID();
+            if (id == KeyEvent.KEY_TYPED) {
+                char c = e.getKeyChar();
+                if (Character.isLetter(c)) c = Character.toLowerCase(c);
+                int currentScore = exp.explore(c);
+                if (currentScore != Integer.MAX_VALUE) {
+                    score += currentScore;
+                    labelYourScoreNumber.setText(Integer.toString(score));
+                    textArea.getHighlighter().removeAllHighlights();
+                    wasWrongWord = false;
+                }
+            } 
+        }
     }
      
     public void keyPressed(KeyEvent e) {
-        char c = e.getKeyChar();
-        if ((c == ' ' || c == '\n') && !exp.isPossibleWord()) {
-            incorrectWordsString += exp.getWord() + " ";
-            incorrectWords.setText(incorrectWordsString);
+        if (countdownTimer.isRunning()) {
+            char c = e.getKeyChar();
+            if ((c == ' ' || c == '\n') && !exp.isPossibleWord() ) {
+                incorrectWordsString += exp.getWord() + " ";
+                incorrectWords.setText(incorrectWordsString);
+            }
         }
     }
 
     public void keyReleased(KeyEvent e) { 
-        //print(textArea.getText());
-        if (!exp.isPossibleWord()) {
-            Highlighter highlighter = textArea.getHighlighter();
-            HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
-            int beginOfCurrentWord = textArea.getText().lastIndexOf(exp.getWord());
-            int endCurrentWord = beginOfCurrentWord + exp.getWord().length();
+        if (countdownTimer.isRunning()) {
+            //print(textArea.getText());
+            if (!exp.isPossibleWord()) {
+                Highlighter highlighter = textArea.getHighlighter();
+                HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
+                int beginOfCurrentWord = textArea.getText().toLowerCase().lastIndexOf(exp.getWord());
+                int endCurrentWord = beginOfCurrentWord + exp.getWord().length();
 
-            //debug
-            print(exp.getWord());
-            print(textArea.getText());
-            print((int)e.getKeyChar());
-            print(beginOfCurrentWord);
-            print(endCurrentWord);
+                //debug
+                print(exp.getWord());
+                print(textArea.getText());
+                print((int)e.getKeyChar());
+                print(beginOfCurrentWord);
+                print(endCurrentWord);
 
-            wasWrongWord = true;
-            try {
-                highlighter.addHighlight(beginOfCurrentWord, endCurrentWord, painter);
-            } catch (BadLocationException ex) {
-                System.out.println("bad location");
+                wasWrongWord = true;
+                try {
+                    highlighter.addHighlight(beginOfCurrentWord, endCurrentWord, painter);
+                } catch (BadLocationException ex) {
+                    System.out.println("bad location");
+                }
+            } else if(wasWrongWord){
+                textArea.getHighlighter().removeAllHighlights();
+                wasWrongWord = false;
             }
-        } else if(wasWrongWord){
-            textArea.getHighlighter().removeAllHighlights();
-            wasWrongWord = false;
         }
     }
 }
