@@ -52,7 +52,7 @@ public class Login extends Screen {
         txtUsername.setHorizontalAlignment(JTextField.CENTER);
         txtUsername.setFont(fontTexField);
         txtUsername.setCaretColor(Color.white);
-        txtUsername.setDocument(new JTextFieldLimit(7));
+        txtUsername.setDocument(new JTextFieldLimit(10));
         txtUsername.setForeground(Color.white);
         txtUsername.setBackground(backgroundColor);
         txtUsername.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),

@@ -24,6 +24,7 @@ public abstract class Screen implements ActionListener, Runnable, Component {
     public static final Color fontColor = new Color(0, 255, 255);
     public static final Color backgroundColor = new Color(32, 32, 32);
     public static final Font font = new Font(fontString, Font.BOLD, 16);
+    protected final static String SOUND_FILENAME = "../music/song.wav";
 
     protected static DataUsers dataUsers;
 
@@ -61,6 +62,7 @@ public abstract class Screen implements ActionListener, Runnable, Component {
                     wrapper.add(display.createComponents());
                     wrapper.revalidate();
                     wrapper.repaint();
+
                 } else {
                     login.txtUsername.setText("");
                     login.txtPassword.setText("");
@@ -70,6 +72,7 @@ public abstract class Screen implements ActionListener, Runnable, Component {
             } catch (InvalidKeySpecException ex) {
                 System.out.println("invalid key spec");
             }
+
         }
     }
 
@@ -113,8 +116,8 @@ public abstract class Screen implements ActionListener, Runnable, Component {
         frame.add(content);
         frame.pack();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = screenSize.height * 6 / 6;
-        int width = screenSize.width * 3 / 3;
+        int height = screenSize.height * 9 / 10;
+        int width = screenSize.width * 3 / 4;
         frame.setSize(new Dimension(width, height));
         frame.setLocationRelativeTo(null); //center of screen
         frame.setVisible(true);

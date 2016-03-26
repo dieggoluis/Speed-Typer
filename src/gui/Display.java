@@ -44,10 +44,12 @@ public class Display extends Screen implements ActionListener, KeyListener {
     private Explorer exp;
     private final int DELETE = 127;
     private String incorrectWordsString;
+    private boolean wasWrongWord;
 
     public Display() {
         //pointer used in the "mother" class Screen
         incorrectWordsString = "";
+        wasWrongWord = false;
         display = this;
         try {
             exp = new Explorer();
@@ -198,6 +200,7 @@ public class Display extends Screen implements ActionListener, KeyListener {
                     labelBestScoreNumber.setText(Integer.toString(bestScore));
                 }
                 textArea.setText("");
+                incorrectWords.setText("");
                 labelYourScoreNumber.setText("0");
                 currentDuration = duration;
                 button.setText(stringStart);
@@ -211,7 +214,10 @@ public class Display extends Screen implements ActionListener, KeyListener {
                     button.setText(stringQuit);
                     countdownTimer.start();
                     textArea.setEditable(true);
+                    textArea.requestFocusInWindow();
+
                 }
+                    
             } else {
                 if (score > bestScore) {
                     bestScore = score;
@@ -244,7 +250,8 @@ public class Display extends Screen implements ActionListener, KeyListener {
             if (currentScore != Integer.MAX_VALUE) {
                 score += currentScore;
                 labelYourScoreNumber.setText(Integer.toString(score));
-                //textArea.setHighlighter(null);
+                textArea.getHighlighter().removeAllHighlights();
+                wasWrongWord = false;
             }
         } 
     }
@@ -262,7 +269,7 @@ public class Display extends Screen implements ActionListener, KeyListener {
         if (!exp.isPossibleWord()) {
             Highlighter highlighter = textArea.getHighlighter();
             HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.red);
-            int beginOfCurrentWord = textArea.getText().indexOf(exp.getWord());
+            int beginOfCurrentWord = textArea.getText().lastIndexOf(exp.getWord());
             int endCurrentWord = beginOfCurrentWord + exp.getWord().length();
 
             //debug
@@ -272,12 +279,15 @@ public class Display extends Screen implements ActionListener, KeyListener {
             print(beginOfCurrentWord);
             print(endCurrentWord);
 
-            if (e.getKeyChar() == ' ') endCurrentWord--;
+            wasWrongWord = true;
             try {
                 highlighter.addHighlight(beginOfCurrentWord, endCurrentWord, painter);
             } catch (BadLocationException ex) {
                 System.out.println("bad location");
             }
+        } else if(wasWrongWord){
+            textArea.getHighlighter().removeAllHighlights();
+            wasWrongWord = false;
         }
     }
 }
