@@ -10,6 +10,13 @@ import java.util.*;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import sun.audio.*;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import java.applet.*;
+import java.net.*;
 
 public abstract class Screen implements ActionListener, Runnable, Component {
     public static String username;
@@ -24,18 +31,18 @@ public abstract class Screen implements ActionListener, Runnable, Component {
     public static final Color fontColor = new Color(0, 255, 255);
     public static final Color backgroundColor = new Color(32, 32, 32);
     public static final Font font = new Font(fontString, Font.BOLD, 16);
-    protected final static String SOUND_FILENAME = "../music/song.wav";
 
     protected static DataUsers dataUsers;
+    private static final String SOUND_FILENAME = "../music/song.wav";
 
     public Screen() {
         bestScore = 0;
         try {
             dataUsers = new DataUsers();
         } catch (FileNotFoundException e) {
-            System.out.println("File not found");
+            System.out.println(e.getMessage());
         } catch (IOException e) {
-            System.out.println("IO problem");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -55,7 +62,7 @@ public abstract class Screen implements ActionListener, Runnable, Component {
                     try {
                         dataUsers.printDatabase();
                     } catch (IOException ex) {
-                        System.out.println("IO problem");
+                        System.out.println(ex.getMessage());
                     }
 
                     wrapper.removeAll();
@@ -68,11 +75,10 @@ public abstract class Screen implements ActionListener, Runnable, Component {
                     login.txtPassword.setText("");
                 }
             } catch (NoSuchAlgorithmException ex) {
-                System.out.println("no such algorithm");
+                System.out.println(ex.getMessage());
             } catch (InvalidKeySpecException ex) {
-                System.out.println("invalid key spec");
+                System.out.println(ex.getMessage());
             }
-
         }
     }
 
