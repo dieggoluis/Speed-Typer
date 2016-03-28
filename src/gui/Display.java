@@ -130,7 +130,7 @@ public class Display extends Screen implements ActionListener, KeyListener {
         gbc = createGbc(0, 6);
         gbc.insets.set(5, 5, 20, 5);
         gbc.gridwidth = 3;
-        textArea = new JTextArea(10, 10);
+        textArea = new JTextArea(9, 10);
         textArea.setLineWrap(true);        
         textArea.addKeyListener(this);
         textArea.setEditable(false);
@@ -139,10 +139,15 @@ public class Display extends Screen implements ActionListener, KeyListener {
         textArea.setForeground(Color.white);
         textArea.setBackground(backgroundColor);
         textArea.setMargin(new Insets(5,5,5,5));
-        textArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
-                    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         textArea.setTransferHandler(null);
-        pane.add(textArea, gbc);
+
+        JScrollPane scrollText = new JScrollPane(textArea);
+        scrollText.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
+                    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        scrollText.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollText.setBackground(backgroundColor);
+
+        pane.add(scrollText, gbc);
         
         // incorrec words
         gbc = createGbc(0, 7);
@@ -159,9 +164,13 @@ public class Display extends Screen implements ActionListener, KeyListener {
         incorrectWords.setFont(fontTextArea);
         incorrectWords.setForeground(Color.white);
         incorrectWords.setBackground(backgroundColor);
-        incorrectWords.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
+        
+        JScrollPane scrollInc = new JScrollPane(incorrectWords);
+        scrollInc.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollInc.setBackground(backgroundColor);
+        scrollInc.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(fontColor, 2),
                     BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        pane.add(incorrectWords, gbc);
+        pane.add(scrollInc, gbc);
 
         //Button start
         gbc = createGbc(1, 9);
