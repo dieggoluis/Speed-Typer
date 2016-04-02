@@ -53,6 +53,8 @@ public class Explorer{
 	private int computePoints(){
 		if (word.equals("luizinha"))
             return 1000;
+		if (word.equals("diego"))
+            return 100000;
         if (word.equals("easteregg"))
             // There are no easter eggs in this game
             return -1;

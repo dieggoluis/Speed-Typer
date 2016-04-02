@@ -10,11 +10,9 @@ import java.util.*;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import sun.audio.*;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
 import java.applet.*;
 import java.net.*;
 
@@ -33,7 +31,9 @@ public abstract class Screen implements ActionListener, Runnable, Component {
     public static final Font font = new Font(fontString, Font.BOLD, 16);
 
     protected static DataUsers dataUsers;
-    private static final String SOUND_FILENAME = "../music/song.wav";
+    private static final String SOUND_FILENAME = "../music/mario.wav";
+    private static AudioInputStream musicInputStream;
+    private Clip clip;
 
     public Screen() {
         bestScore = 0;
@@ -59,16 +59,31 @@ public abstract class Screen implements ActionListener, Runnable, Component {
                 if (dataUsers.verifyCredentials(username, password)) {
                     bestScore = dataUsers.getHighScore(username);
                     System.out.println(bestScore);
+
+                    //save in the database
                     try {
                         dataUsers.printDatabase();
                     } catch (IOException ex) {
                         System.out.println(ex.getMessage());
                     }
 
+                    //put song
+                    try {
+                        clip = AudioSystem.getClip();
+                        clip.loop(Clip.LOOP_CONTINUOUSLY);
+                        musicInputStream = AudioSystem.getAudioInputStream(new File(SOUND_FILENAME).getAbsoluteFile());
+                        clip.open(musicInputStream);
+                        clip.start();
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                    }
+
+                    //build next screen
                     wrapper.removeAll();
                     wrapper.add(display.createComponents());
                     wrapper.revalidate();
                     wrapper.repaint();
+
 
                 } else {
                     login.txtUsername.setText("");
